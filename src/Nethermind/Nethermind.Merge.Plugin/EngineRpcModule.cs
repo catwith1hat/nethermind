@@ -189,6 +189,7 @@ public partial class EngineRpcModule(
     private readonly IHandler<HashSet<string>, IReadOnlyList<string>> _capabilitiesHandler = capabilitiesHandler ?? throw new ArgumentNullException(nameof(capabilitiesHandler));
     private readonly IBlobCustodyTracker _blobCustodyTracker = blobCustodyTracker ?? throw new ArgumentNullException(nameof(blobCustodyTracker));
     protected readonly ISpecProvider _specProvider = specProvider ?? throw new ArgumentNullException(nameof(specProvider));
+    private readonly ILogManager _logManager = logManager ?? throw new ArgumentNullException(nameof(logManager));
     protected readonly ILogger _logger = logManager.GetClassLogger<EngineRpcModule>();
 
     public ResultWrapper<IReadOnlyList<string>> engine_exchangeCapabilities(IEnumerable<string> methods)

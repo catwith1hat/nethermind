@@ -40,5 +40,12 @@ namespace Nethermind.Merge.Plugin.Data
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Never)]
         public string? ValidationError { get; set; }
+
+        /// <summary>
+        /// Hex-encoded RLP <c>PreBlockAccessList</c> when produced; omitted when <c>null</c>.
+        /// </summary>
+        [JsonPropertyName("pre_bal")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public byte[]? PreBal { get; set; }
     }
 }

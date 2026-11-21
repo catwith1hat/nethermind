@@ -530,7 +530,7 @@ public abstract class BlockchainTestBase
         {
             System.Reflection.MethodInfo method = typeof(IEngineRpcModule).GetMethod($"engine_newPayloadV{version}")
                 ?? throw new NotSupportedException($"engine_newPayloadV{version} not found on IEngineRpcModule. Update {nameof(EngineApiVersions.NewPayload.Latest)}.");
-            result[version] = method.GetParameters().Length;
+            result[version] = method.GetParameters().Count(static p => !p.IsOptional);
         }
 
         return result;

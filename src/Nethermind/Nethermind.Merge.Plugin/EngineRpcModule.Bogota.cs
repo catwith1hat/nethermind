@@ -47,10 +47,19 @@ public partial class EngineRpcModule : IEngineRpcModule
     public Task<ResultWrapper<InclusionListBytes>> engine_getInclusionListV1(Hash256? parentBlockHash = null)
         => getInclusionListTransactionsHandler.Handle(parentBlockHash);
 
-    public Task<ResultWrapper<PayloadStatusV2>> engine_newPayloadV6(ExecutionPayloadV4 executionPayload, Hash256?[] blobVersionedHashes, Hash256? parentBeaconBlockRoot, byte[][]? executionRequests, byte[][]? inclusionListTransactions)
+    public Task<ResultWrapper<PayloadStatusV2>> engine_newPayloadV6(
+        ExecutionPayloadV4 executionPayload,
+        Hash256?[] blobVersionedHashes,
+        Hash256? parentBeaconBlockRoot,
+        byte[][]? executionRequests,
+        byte[][]? inclusionListTransactions,
+        bool? produce_pre_bal = null,
+        byte[]? pre_bal = null)
         => NewPayloadWithInclusionList(
             new ExecutionPayloadParams<ExecutionPayloadV4>(executionPayload, blobVersionedHashes, parentBeaconBlockRoot, executionRequests, inclusionListTransactions),
-            EngineApiVersions.NewPayload.V6);
+            EngineApiVersions.NewPayload.V6,
+            produce_pre_bal,
+            pre_bal);
 
     public Task<ResultWrapper<NewPayloadWithWitnessV1Result>> engine_newPayloadWithWitnessV6(
         ExecutionPayloadV4 executionPayload,
@@ -62,9 +71,13 @@ public partial class EngineRpcModule : IEngineRpcModule
             new InclusionListExecutionPayloadParams(executionPayload, blobVersionedHashes, parentBeaconBlockRoot, executionRequests, inclusionListTransactions));
 
     /// <summary>Runs <see cref="NewPayload"/> and maps its result onto the Bogota <see cref="PayloadStatusV2"/> shape.</summary>
-    protected async Task<ResultWrapper<PayloadStatusV2>> NewPayloadWithInclusionList(IExecutionPayloadParams executionPayloadParams, int version)
+    protected async Task<ResultWrapper<PayloadStatusV2>> NewPayloadWithInclusionList(
+        IExecutionPayloadParams executionPayloadParams,
+        int version,
+        bool? producePreBal = null,
+        byte[]? preBal = null)
     {
-        ResultWrapper<PayloadStatusV1> result = await NewPayload(executionPayloadParams, version);
+        ResultWrapper<PayloadStatusV1> result = await NewPayload(executionPayloadParams, version, producePreBal, preBal);
 
         if (result.Result.ResultType != ResultType.Success)
             return ResultWrapper<PayloadStatusV2>.Fail(result.Result.Error!, result.ErrorCode, result.IsTemporary);
@@ -80,17 +93,20 @@ public partial class EngineRpcModule : IEngineRpcModule
             _ => null
         };
 
-        if (inclusionListSatisfied is { } satisfied && status.LatestValidHash is { } validHash)
+        if (preBal is null)
         {
-            SetInclusionListAnswer(validHash,
-                executionPayloadParams.ExecutionPayload.BlockNumber, satisfied);
-        }
-        else if (status.Status is PayloadStatus.Accepted or PayloadStatus.Syncing
-            && executionPayloadParams is { InclusionListTransactions: { } retained, ExecutionPayload.BlockHash: { } blockHash })
-        {
-            SetRetainedInclusionList(blockHash,
-                executionPayloadParams.ExecutionPayload.BlockNumber, retained,
-                status.Status == PayloadStatus.Accepted);
+            if (inclusionListSatisfied is { } satisfied && status.LatestValidHash is { } validHash)
+            {
+                SetInclusionListAnswer(validHash,
+                    executionPayloadParams.ExecutionPayload.BlockNumber, satisfied);
+            }
+            else if (status.Status is PayloadStatus.Accepted or PayloadStatus.Syncing
+                && executionPayloadParams is { InclusionListTransactions: { } retained, ExecutionPayload.BlockHash: { } blockHash })
+            {
+                SetRetainedInclusionList(blockHash,
+                    executionPayloadParams.ExecutionPayload.BlockNumber, retained,
+                    status.Status == PayloadStatus.Accepted);
+            }
         }
 
         return ResultWrapper<PayloadStatusV2>.Success(new PayloadStatusV2
@@ -98,7 +114,8 @@ public partial class EngineRpcModule : IEngineRpcModule
             Status = unsatisfied ? PayloadStatus.Valid : status.Status,
             LatestValidHash = status.LatestValidHash,
             ValidationError = status.ValidationError,
-            InclusionListSatisfied = inclusionListSatisfied
+            InclusionListSatisfied = inclusionListSatisfied,
+            PreBal = status.PreBal
         });
     }
 

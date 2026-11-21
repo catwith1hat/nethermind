@@ -30,6 +30,9 @@ public partial class EngineRpcModule : IEngineRpcModule
     public Task<ResultWrapper<IReadOnlyList<ExecutionPayloadBodyV1Result?>>> engine_getPayloadBodiesByRangeV1(ulong start, ulong count)
         => _executionGetPayloadBodiesByRangeV1Handler.Handle(start, count);
 
-    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV2(ExecutionPayload executionPayload)
-        => NewPayload(executionPayload, EngineApiVersions.NewPayload.V2);
+    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV2(
+        ExecutionPayload executionPayload,
+        bool? produce_pre_bal = null,
+        byte[]? pre_bal = null)
+        => NewPayload(executionPayload, EngineApiVersions.NewPayload.V2, produce_pre_bal, pre_bal);
 }

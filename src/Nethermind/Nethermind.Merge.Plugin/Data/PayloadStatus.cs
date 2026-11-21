@@ -27,5 +27,8 @@ namespace Nethermind.Merge.Plugin.Data
 
         /// <summary>The block executed cleanly but omitted an appendable inclusion-list transaction (EIP-7805).</summary>
         public const string InclusionListUnsatisfied = "INCLUSION_LIST_UNSATISFIED";
+
+        /// <summary>Payload block hash is invalid (<c>engine_newPayloadV1</c>).</summary>
+        public const string InvalidBlockHash = "INVALID_BLOCK_HASH";
     }
 }

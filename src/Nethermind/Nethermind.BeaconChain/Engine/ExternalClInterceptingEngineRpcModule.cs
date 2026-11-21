@@ -74,23 +74,23 @@ public sealed class ExternalClInterceptingEngineRpcModule : IEngineRpcModule
         }
     }
 
-    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV1(ExecutionPayload executionPayload)
-        => Detect(() => _engine.engine_newPayloadV1(executionPayload));
+    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV1(ExecutionPayload executionPayload, bool? produce_pre_bal = null, byte[]? pre_bal = null)
+        => Detect(() => _engine.engine_newPayloadV1(executionPayload, produce_pre_bal, pre_bal));
 
-    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV2(ExecutionPayload executionPayload)
-        => Detect(() => _engine.engine_newPayloadV2(executionPayload));
+    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV2(ExecutionPayload executionPayload, bool? produce_pre_bal = null, byte[]? pre_bal = null)
+        => Detect(() => _engine.engine_newPayloadV2(executionPayload, produce_pre_bal, pre_bal));
 
-    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV3(ExecutionPayloadV3 executionPayload, Hash256?[] blobVersionedHashes, Hash256? parentBeaconBlockRoot)
-        => Detect(() => _engine.engine_newPayloadV3(executionPayload, blobVersionedHashes, parentBeaconBlockRoot));
+    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV3(ExecutionPayloadV3 executionPayload, Hash256?[] blobVersionedHashes, Hash256? parentBeaconBlockRoot, bool? produce_pre_bal = null, byte[]? pre_bal = null)
+        => Detect(() => _engine.engine_newPayloadV3(executionPayload, blobVersionedHashes, parentBeaconBlockRoot, produce_pre_bal, pre_bal));
 
-    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV4(ExecutionPayloadV3 executionPayload, Hash256?[] blobVersionedHashes, Hash256? parentBeaconBlockRoot, byte[][]? executionRequests)
-        => Detect(() => _engine.engine_newPayloadV4(executionPayload, blobVersionedHashes, parentBeaconBlockRoot, executionRequests));
+    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV4(ExecutionPayloadV3 executionPayload, Hash256?[] blobVersionedHashes, Hash256? parentBeaconBlockRoot, byte[][]? executionRequests, bool? produce_pre_bal = null, byte[]? pre_bal = null)
+        => Detect(() => _engine.engine_newPayloadV4(executionPayload, blobVersionedHashes, parentBeaconBlockRoot, executionRequests, produce_pre_bal, pre_bal));
 
-    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV5(ExecutionPayloadV4 executionPayload, Hash256?[] blobVersionedHashes, Hash256? parentBeaconBlockRoot, byte[][]? executionRequests)
-        => Detect(() => _engine.engine_newPayloadV5(executionPayload, blobVersionedHashes, parentBeaconBlockRoot, executionRequests));
+    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV5(ExecutionPayloadV4 executionPayload, Hash256?[] blobVersionedHashes, Hash256? parentBeaconBlockRoot, byte[][]? executionRequests, bool? produce_pre_bal = null, byte[]? pre_bal = null)
+        => Detect(() => _engine.engine_newPayloadV5(executionPayload, blobVersionedHashes, parentBeaconBlockRoot, executionRequests, produce_pre_bal, pre_bal));
 
-    public Task<ResultWrapper<PayloadStatusV2>> engine_newPayloadV6(ExecutionPayloadV4 executionPayload, Hash256?[] blobVersionedHashes, Hash256? parentBeaconBlockRoot, byte[][]? executionRequests, byte[][]? inclusionListTransactions)
-        => Detect(() => _engine.engine_newPayloadV6(executionPayload, blobVersionedHashes, parentBeaconBlockRoot, executionRequests, inclusionListTransactions));
+    public Task<ResultWrapper<PayloadStatusV2>> engine_newPayloadV6(ExecutionPayloadV4 executionPayload, Hash256?[] blobVersionedHashes, Hash256? parentBeaconBlockRoot, byte[][]? executionRequests, byte[][]? inclusionListTransactions, bool? produce_pre_bal = null, byte[]? pre_bal = null)
+        => Detect(() => _engine.engine_newPayloadV6(executionPayload, blobVersionedHashes, parentBeaconBlockRoot, executionRequests, inclusionListTransactions, produce_pre_bal, pre_bal));
 
     public Task<ResultWrapper<ForkchoiceUpdatedV1Result>> engine_forkchoiceUpdatedV1(ForkchoiceStateV1 forkchoiceState, PayloadAttributes? payloadAttributes = null)
         => Detect(() => _engine.engine_forkchoiceUpdatedV1(forkchoiceState, payloadAttributes));

@@ -6,6 +6,7 @@ using Nethermind.Core.Crypto;
 using Nethermind.JsonRpc;
 using Nethermind.JsonRpc.Modules;
 using Nethermind.Merge.Plugin.Data;
+using Nethermind.Serialization.Json;
 
 namespace Nethermind.Merge.Plugin;
 
@@ -15,7 +16,13 @@ public partial interface IEngineRpcModule : IRpcModule
         Description = "Verifies the payload according to the execution environment rules and returns the verification status and hash of the last valid block.",
         IsSharable = true,
         IsImplemented = true)]
-    Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV4(ExecutionPayloadV3 executionPayload, Hash256?[] blobVersionedHashes, Hash256? parentBeaconBlockRoot, byte[][]? executionRequests);
+    Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV4(
+        ExecutionPayloadV3 executionPayload,
+        Hash256?[] blobVersionedHashes,
+        Hash256? parentBeaconBlockRoot,
+        byte[][]? executionRequests,
+        bool? produce_pre_bal = null,
+        [JsonRpcParameter(ConverterType = typeof(StrictHexByteArrayConverter))] byte[]? pre_bal = null);
 
     [JsonRpcMethod(
         Description = "Verifies the payload according to the execution environment rules and returns the verification status, hash of the last valid block, and the execution witness when the payload is valid.",

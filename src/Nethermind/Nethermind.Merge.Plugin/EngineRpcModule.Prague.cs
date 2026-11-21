@@ -19,8 +19,18 @@ public partial class EngineRpcModule : IEngineRpcModule
     /// Method parameter list is extended with <see cref="ExecutionRequests"/> parameter.
     /// <see href="https://eips.ethereum.org/EIPS/eip-7685">EIP-7685</see>.
     /// </summary>
-    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV4(ExecutionPayloadV3 executionPayload, Hash256?[] blobVersionedHashes, Hash256? parentBeaconBlockRoot, byte[][]? executionRequests)
-        => NewPayload(new ExecutionPayloadParams<ExecutionPayloadV3>(executionPayload, blobVersionedHashes, parentBeaconBlockRoot, executionRequests), EngineApiVersions.NewPayload.V4);
+    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV4(
+        ExecutionPayloadV3 executionPayload,
+        Hash256?[] blobVersionedHashes,
+        Hash256? parentBeaconBlockRoot,
+        byte[][]? executionRequests,
+        bool? produce_pre_bal = null,
+        byte[]? pre_bal = null)
+        => NewPayload(
+            new ExecutionPayloadParams<ExecutionPayloadV3>(executionPayload, blobVersionedHashes, parentBeaconBlockRoot, executionRequests),
+            EngineApiVersions.NewPayload.V4,
+            produce_pre_bal,
+            pre_bal);
 
     public Task<ResultWrapper<NewPayloadWithWitnessV1Result>> engine_newPayloadWithWitnessV4(
         ExecutionPayloadV3 executionPayload,

@@ -28,8 +28,17 @@ public partial class EngineRpcModule : IEngineRpcModule
             ? ForkchoiceUpdated(forkchoiceState, payloadAttributes, version)
             : Task.FromResult(ResultWrapper<ForkchoiceUpdatedV1Result>.Fail("Forkchoice state must set headBlockHash, safeBlockHash and finalizedBlockHash", ErrorCodes.InvalidParams));
 
-    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV3(ExecutionPayloadV3 executionPayload, Hash256?[] blobVersionedHashes, Hash256? parentBeaconBlockRoot) =>
-        NewPayload(new ExecutionPayloadParams<ExecutionPayloadV3>(executionPayload, blobVersionedHashes, parentBeaconBlockRoot), EngineApiVersions.NewPayload.V3);
+    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV3(
+        ExecutionPayloadV3 executionPayload,
+        Hash256?[] blobVersionedHashes,
+        Hash256? parentBeaconBlockRoot,
+        bool? produce_pre_bal = null,
+        byte[]? pre_bal = null) =>
+        NewPayload(
+            new ExecutionPayloadParams<ExecutionPayloadV3>(executionPayload, blobVersionedHashes, parentBeaconBlockRoot),
+            EngineApiVersions.NewPayload.V3,
+            produce_pre_bal,
+            pre_bal);
 
     public Task<ResultWrapper<GetPayloadV3Result?>> engine_getPayloadV3(byte[] payloadId) =>
         _getPayloadHandlerV3.HandleAsync(payloadId);

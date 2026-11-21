@@ -16,6 +16,7 @@ using Nethermind.Core.Specs;
 using Nethermind.JsonRpc;
 using Nethermind.Merge.Plugin.Data;
 using Nethermind.Merge.Plugin.Handlers;
+using Nethermind.Merge.Plugin.PreBal;
 using ValidationResult = Nethermind.Merge.Plugin.Data.ValidationResult;
 
 namespace Nethermind.Merge.Plugin;
@@ -51,8 +52,11 @@ public partial class EngineRpcModule : IEngineRpcModule
     public Task<ResultWrapper<ExecutionPayload?>> engine_getPayloadV1(byte[] payloadId) =>
         _getPayloadHandlerV1.HandleAsync(payloadId);
 
-    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV1(ExecutionPayload executionPayload)
-        => NewPayload(executionPayload, EngineApiVersions.NewPayload.V1);
+    public Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV1(
+        ExecutionPayload executionPayload,
+        bool? produce_pre_bal = null,
+        byte[]? pre_bal = null)
+        => NewPayload(executionPayload, EngineApiVersions.NewPayload.V1, produce_pre_bal, pre_bal);
 
     protected async Task<ResultWrapper<ForkchoiceUpdatedV1Result>> ForkchoiceUpdated(
         ForkchoiceStateV1 forkchoiceState, PayloadAttributes? payloadAttributes, int version)
@@ -91,9 +95,28 @@ public partial class EngineRpcModule : IEngineRpcModule
         }
     }
 
-    protected async Task<ResultWrapper<PayloadStatusV1>> NewPayload(IExecutionPayloadParams executionPayloadParams, int version)
+    protected async Task<ResultWrapper<PayloadStatusV1>> NewPayload(
+        IExecutionPayloadParams executionPayloadParams,
+        int version,
+        bool? producePreBal = null,
+        byte[]? preBal = null)
     {
         _engineRequestsTracker.OnNewPayloadCalled();
+
+        if (producePreBal == true)
+        {
+            string message = preBal is not null
+                ? "produce_pre_bal and pre_bal are mutually exclusive"
+                : "Pre-BAL production is not supported";
+            if (_logger.IsWarn) _logger.Warn(message);
+            return ResultWrapper<PayloadStatusV1>.Fail(message, ErrorCodes.InvalidParams);
+        }
+
+        if (preBal is not null)
+        {
+            return PreBalExecutionHandler.Execute(_specProvider, _logManager, executionPayloadParams, version, preBal);
+        }
+
         ExecutionPayload executionPayload = executionPayloadParams.ExecutionPayload;
         executionPayload.ExecutionRequests = executionPayloadParams.ExecutionRequests;
         executionPayload.InclusionListTransactions = executionPayloadParams.InclusionListTransactions;

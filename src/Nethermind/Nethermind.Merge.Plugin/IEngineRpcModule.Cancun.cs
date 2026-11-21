@@ -8,6 +8,7 @@ using Nethermind.Core.Crypto;
 using Nethermind.JsonRpc;
 using Nethermind.JsonRpc.Modules;
 using Nethermind.Merge.Plugin.Data;
+using Nethermind.Serialization.Json;
 
 namespace Nethermind.Merge.Plugin;
 
@@ -24,7 +25,12 @@ public partial interface IEngineRpcModule : IRpcModule
         Description = "Verifies the payload according to the execution environment rules and returns the verification status and hash of the last valid block.",
         IsSharable = true,
         IsImplemented = true)]
-    Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV3(ExecutionPayloadV3 executionPayload, Hash256?[] blobVersionedHashes, Hash256? parentBeaconBlockRoot);
+    Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV3(
+        ExecutionPayloadV3 executionPayload,
+        Hash256?[] blobVersionedHashes,
+        Hash256? parentBeaconBlockRoot,
+        bool? produce_pre_bal = null,
+        [JsonRpcParameter(ConverterType = typeof(StrictHexByteArrayConverter))] byte[]? pre_bal = null);
 
     [JsonRpcMethod(
         Description = "Returns the most recent version of an execution payload and fees with respect to the transaction set contained by the mempool.",

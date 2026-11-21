@@ -6,6 +6,7 @@ using Nethermind.Consensus.Producers;
 using Nethermind.JsonRpc;
 using Nethermind.JsonRpc.Modules;
 using Nethermind.Merge.Plugin.Data;
+using Nethermind.Serialization.Json;
 
 namespace Nethermind.Merge.Plugin;
 
@@ -33,5 +34,8 @@ public partial interface IEngineRpcModule : IRpcModule
         Description = "Verifies the payload according to the execution environment rules and returns the verification status and hash of the last valid block.",
         IsSharable = true,
         IsImplemented = true)]
-    Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV1(ExecutionPayload executionPayload);
+    Task<ResultWrapper<PayloadStatusV1>> engine_newPayloadV1(
+        ExecutionPayload executionPayload,
+        bool? produce_pre_bal = null,
+        [JsonRpcParameter(ConverterType = typeof(StrictHexByteArrayConverter))] byte[]? pre_bal = null);
 }
